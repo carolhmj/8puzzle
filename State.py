@@ -25,7 +25,7 @@ class State:
 			print("")
 		print("========================")
 	def insertPosT(self, elem, intuple):
-		"""Retorna uma posição a partir de uma tupla"""
+		"""Insere uma posição a partir de uma tupla"""
 		self.puzzle[intuple[0]][intuple[1]] = elem		
 	def nextStates(self):
 		"""Baseada no seu estado atual, essa função retorna uma lista de States que representam os movimentos possíveis"""
