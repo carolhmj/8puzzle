@@ -2,18 +2,27 @@
 # -*- coding: utf-8 -*-
 
 from copy import deepcopy
+from math import pow
 
 class State:
 	""""State é uma classe que representa um estado do 8-puzzle. Ela possui uma variável de classe que indica o valor do espaço vazio
 	no puzzle, uma que indica a dimensão (no caso, 3), e também possui uma variável que guarda o estado do puzzle em uma matriz
 	quadrada de dimensão dimension, e uma variável que guarda a posição do espaço vazio em uma tupla"""
-	emptyValue = -1
+	emptyValue = 0
 	dimension = 3
-	def __init__(self, puzzle, emptyPos):
+	def __init__(self, puzzle, emptyPos, parent=None):
 		if len(puzzle) == self.dimension and len(puzzle[0]) == self.dimension:
 			self.puzzle = puzzle
 		if emptyPos[0] >= 0 and emptyPos[0] < self.dimension and emptyPos[1] >= 0 and emptyPos[1] < self.dimension:
 			self.emptyPos = emptyPos
+		self.parentState = parent
+
+	def setParentState(self, parent):
+		self.parentState = parent
+
+	def getParentState(self):
+		return self.parentState
+
 	def printState(self):
 		"""Imprime o estado no terminal, para visualização"""
 		print("========================")
@@ -26,9 +35,10 @@ class State:
 		print("========================")
 	def insertPosT(self, elem, intuple):
 		"""Insere uma posição a partir de uma tupla"""
-		self.puzzle[intuple[0]][intuple[1]] = elem		
+		self.puzzle[intuple[0]][intuple[1]] = elem
+
 	def nextStates(self):
-		"""Baseada no seu estado atual, essa função retorna uma lista de States que representam os movimentos possíveis"""
+		"""Baseada no seu estado atual, essa função retorna uma lista de States que representam os movimentos possíveis. Os States retornados possuem uma referência ao State pai"""
 		returnedStates = []
 
 		upNeighbor = (self.emptyPos[0]-1, self.emptyPos[1])
@@ -40,7 +50,7 @@ class State:
 			stateUpPuzzle[self.emptyPos[0]][self.emptyPos[1]] = deepcopy(self.puzzle[upNeighbor[0]][upNeighbor[1]])
 			stateUpPuzzle[upNeighbor[0]][upNeighbor[1]] = self.emptyValue
 
-			stateUp = State(stateUpPuzzle, upNeighbor)
+			stateUp = State(stateUpPuzzle, upNeighbor, self)
 			returnedStates.append(stateUp)
 
 
@@ -53,7 +63,7 @@ class State:
 			stateDownPuzzle[self.emptyPos[0]][self.emptyPos[1]] = deepcopy(self.puzzle[downNeighbor[0]][downNeighbor[1]])
 			stateDownPuzzle[downNeighbor[0]][downNeighbor[1]] = self.emptyValue
 
-			stateDown = State(stateDownPuzzle, downNeighbor)
+			stateDown = State(stateDownPuzzle, downNeighbor, self)
 			returnedStates.append(stateDown)
 			
 		leftNeighbor = (self.emptyPos[0], self.emptyPos[1]-1)
@@ -65,7 +75,7 @@ class State:
 			stateLeftPuzzle[self.emptyPos[0]][self.emptyPos[1]] = deepcopy(self.puzzle[leftNeighbor[0]][leftNeighbor[1]])
 			stateLeftPuzzle[leftNeighbor[0]][leftNeighbor[1]] = self.emptyValue
 
-			stateLeft = State(stateLeftPuzzle, leftNeighbor)
+			stateLeft = State(stateLeftPuzzle, leftNeighbor, self)
 			returnedStates.append(stateLeft)
 			
 		rightNeighbor = (self.emptyPos[0], self.emptyPos[1]+1)
@@ -77,10 +87,20 @@ class State:
 			stateRightPuzzle[self.emptyPos[0]][self.emptyPos[1]] = deepcopy(self.puzzle[rightNeighbor[0]][rightNeighbor[1]])
 			stateRightPuzzle[rightNeighbor[0]][rightNeighbor[1]] = self.emptyValue
 
-			stateRight = State(stateRightPuzzle, rightNeighbor)
+			stateRight = State(stateRightPuzzle, rightNeighbor, self)
 			returnedStates.append(stateRight)		
 
 		return returnedStates
+
+	def constructPath(self):
+		"""Retorna uma lista contendo o caminho percorrido até chegar ao estado, ou seja, os predecessores dele"""
+		currState = self
+		path = []
+		while currState != None:
+			path.append(currState)
+			currState = currState.getParentState()
+		path.reverse()		
+		return path
 
 	def __eq__(self, secondState):
 		"""Compara dois estados, retorna verdadeiro se eles são iguais"""
@@ -96,4 +116,11 @@ class State:
 			return False
 			
 	def __neq__(self, secondState):
-		return not self.__eq__(secondState)			
+		return not self.__eq__(secondState)
+
+	def __hash__(self):
+		string = ""
+		for i in self.puzzle:
+			for j in i:
+				string = string + str(j)
+		return hash(string)
