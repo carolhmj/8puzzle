@@ -1,8 +1,9 @@
 from State import State
-from Search import Search
+from Search import AStarSearch
+from heur import heur_man
 i = State([[0,6,8],[2,7,1],[4,5,3]], (0,0))
 f = State([[1,2,3],[4,5,6],[7,8,0]], (2,2))
-s = Search(i,f)
+s = AStarSearch(i,f,heur_man)
 l = s.runSearch()
 
 from State import State
