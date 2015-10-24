@@ -10,12 +10,13 @@ class State:
 	quadrada de dimensão dimension, e uma variável que guarda a posição do espaço vazio em uma tupla"""
 	emptyValue = 0
 	dimension = 3
-	def __init__(self, puzzle, emptyPos, parent=None):
+	def __init__(self, puzzle, emptyPos, parent=None, height=0):
 		if len(puzzle) == self.dimension and len(puzzle[0]) == self.dimension:
 			self.puzzle = puzzle
 		if emptyPos[0] >= 0 and emptyPos[0] < self.dimension and emptyPos[1] >= 0 and emptyPos[1] < self.dimension:
 			self.emptyPos = emptyPos
 		self.parentState = parent
+		self.height = height
 
 	def setParentState(self, parent):
 		self.parentState = parent
@@ -50,7 +51,7 @@ class State:
 			stateUpPuzzle[self.emptyPos[0]][self.emptyPos[1]] = deepcopy(self.puzzle[upNeighbor[0]][upNeighbor[1]])
 			stateUpPuzzle[upNeighbor[0]][upNeighbor[1]] = self.emptyValue
 
-			stateUp = State(stateUpPuzzle, upNeighbor, self)
+			stateUp = State(stateUpPuzzle, upNeighbor, self, self.height+1)
 			returnedStates.append(stateUp)
 
 
@@ -63,7 +64,7 @@ class State:
 			stateDownPuzzle[self.emptyPos[0]][self.emptyPos[1]] = deepcopy(self.puzzle[downNeighbor[0]][downNeighbor[1]])
 			stateDownPuzzle[downNeighbor[0]][downNeighbor[1]] = self.emptyValue
 
-			stateDown = State(stateDownPuzzle, downNeighbor, self)
+			stateDown = State(stateDownPuzzle, downNeighbor, self, self.height+1)
 			returnedStates.append(stateDown)
 			
 		leftNeighbor = (self.emptyPos[0], self.emptyPos[1]-1)
@@ -75,7 +76,7 @@ class State:
 			stateLeftPuzzle[self.emptyPos[0]][self.emptyPos[1]] = deepcopy(self.puzzle[leftNeighbor[0]][leftNeighbor[1]])
 			stateLeftPuzzle[leftNeighbor[0]][leftNeighbor[1]] = self.emptyValue
 
-			stateLeft = State(stateLeftPuzzle, leftNeighbor, self)
+			stateLeft = State(stateLeftPuzzle, leftNeighbor, self, self.height+1)
 			returnedStates.append(stateLeft)
 			
 		rightNeighbor = (self.emptyPos[0], self.emptyPos[1]+1)
@@ -87,7 +88,7 @@ class State:
 			stateRightPuzzle[self.emptyPos[0]][self.emptyPos[1]] = deepcopy(self.puzzle[rightNeighbor[0]][rightNeighbor[1]])
 			stateRightPuzzle[rightNeighbor[0]][rightNeighbor[1]] = self.emptyValue
 
-			stateRight = State(stateRightPuzzle, rightNeighbor, self)
+			stateRight = State(stateRightPuzzle, rightNeighbor, self, self.height+1)
 			returnedStates.append(stateRight)		
 
 		return returnedStates
