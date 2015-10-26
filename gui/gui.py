@@ -8,7 +8,10 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
-import sys
+import sys, os
+lib_path = os.path.abspath('..')
+sys.path.append(lib_path)
+from Search import *
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -48,6 +51,7 @@ class Ui_PuzzleInput(QtGui.QWidget):
         self.horizontalLayout = QtGui.QHBoxLayout()
         self.horizontalLayout.setObjectName(_fromUtf8("horizontalLayout"))
         self.bfsOpt = QtGui.QRadioButton(self.Algoritmo)
+        self.bfsOpt.setChecked(True)
         self.bfsOpt.setInputMethodHints(QtCore.Qt.ImhDigitsOnly)
         self.bfsOpt.setObjectName(_fromUtf8("bfsOpt"))
         self.horizontalLayout.addWidget(self.bfsOpt)
@@ -58,6 +62,7 @@ class Ui_PuzzleInput(QtGui.QWidget):
         self.verticalLayout_4.addLayout(self.horizontalLayout)
         self.verticalLayout.addWidget(self.Algoritmo)
         self.Heuristica = QtGui.QGroupBox(PuzzleInput)
+        self.Heuristica.setEnabled(False)
         self.Heuristica.setInputMethodHints(QtCore.Qt.ImhDigitsOnly)
         self.Heuristica.setObjectName(_fromUtf8("Heuristica"))
         self.horizontalLayout_5 = QtGui.QHBoxLayout(self.Heuristica)
@@ -65,6 +70,7 @@ class Ui_PuzzleInput(QtGui.QWidget):
         self.horizontalLayout_4 = QtGui.QHBoxLayout()
         self.horizontalLayout_4.setObjectName(_fromUtf8("horizontalLayout_4"))
         self.dMinOpt = QtGui.QRadioButton(self.Heuristica)
+        self.dMinOpt.setChecked(True)
         self.dMinOpt.setInputMethodHints(QtCore.Qt.ImhDigitsOnly)
         self.dMinOpt.setObjectName(_fromUtf8("dMinOpt"))
         self.horizontalLayout_4.addWidget(self.dMinOpt)
@@ -227,6 +233,15 @@ class Ui_PuzzleInput(QtGui.QWidget):
 
         self.resolverBtn.clicked.connect(self.checkAndSolve)
 
+        self.aStarOpt.toggled.connect(self.activateHeur)
+        self.bfsOpt.toggled.connect(self.disableHeur)
+
+    def disableHeur (self):
+    	self.Heuristica.setEnabled(False)
+
+    def activateHeur (self):
+    	self.Heuristica.setEnabled(True)
+
     def readFromTable(self,table):
     	r = []
     	for row in xrange(0,3):
@@ -248,13 +263,25 @@ class Ui_PuzzleInput(QtGui.QWidget):
     			return False
     	return True
 
+    def findEmpty(self, state):
+    	for i,x in enumerate(state):
+    		for j,y in enumerate(x):
+    			if (y == 0):
+    				return (i,j)
+
+
     def checkAndSolve(self):
     	a = self.readFromTable(self.initialStateTable)
         b =  self.readFromTable(self.finalStateTable)
-        if self.checkState(a):
-        	print "Estado inicial correto"
-        if self.checkState(b):
-        	print "Estado final correto"
+
+        if (self.checkState(a) and self.checkState(b)):
+        	if self.bfsOpt.isChecked():
+        		bfs = BFSearch(State(a,self.findEmpty(a)),State(b,self.findEmpty(b)))
+        		l = bfs.runSearch()
+        		for i in l:
+        			i.printState()
+
+        
 
 def main():
     app = QtGui.QApplication(sys.argv)

@@ -5,6 +5,14 @@
   <property name="enabled">
    <bool>true</bool>
   </property>
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>500</width>
+    <height>400</height>
+   </rect>
+  </property>
   <property name="minimumSize">
    <size>
     <width>500</width>
@@ -67,6 +75,9 @@
      </item>
      <item>
       <widget class="QGroupBox" name="Heuristica">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
        <property name="inputMethodHints">
         <set>Qt::ImhDigitsOnly</set>
        </property>
@@ -88,6 +99,9 @@
           </item>
           <item>
            <widget class="QRadioButton" name="dManOpt">
+            <property name="enabled">
+             <bool>false</bool>
+            </property>
             <property name="inputMethodHints">
              <set>Qt::ImhDigitsOnly</set>
             </property>
