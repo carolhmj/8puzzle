@@ -12,6 +12,7 @@ import sys, os
 lib_path = os.path.abspath('..')
 sys.path.append(lib_path)
 from Search import *
+from heur import *
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -280,8 +281,18 @@ class Ui_PuzzleInput(QtGui.QWidget):
         		l = bfs.runSearch()
         		for i in l:
         			i.printState()
-
-        
+        		print len(l)
+        	elif self.aStarOpt.isChecked():
+        		l = []
+        		if self.dMinOpt.isChecked():
+        			astar = AStarSearch(State(a,self.findEmpty(a)),State(b,self.findEmpty(b)),heur_min)
+        			l = astar.runSearch()
+        		elif self.dManOpt.isChecked():
+        			astar = AStarSearch(State(a,self.findEmpty(a)),State(b,self.findEmpty(b)),heur_man)
+        			l = astar.runSearch()
+        		for i in l:
+        			i.printState()
+        		print len(l)
 
 def main():
     app = QtGui.QApplication(sys.argv)
